@@ -1,28 +1,40 @@
 <?php
 
-use asb\yii2\assets\CommonAsset;
-use asb\yii2\modules\users_0_170112\models\User;
-
-use yii\grid\GridView;
-use yii\grid\SerialColumn;
-use yii\grid\ActionColumn;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\helpers\ArrayHelper;
-
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $searchModel asb\yii2\modules\users_0_170112\models\UserSearch */
 /* @var $currentId integer current item id */
 
-$gridHtmlClass = 'users-list-grid';
+    use asb\yii2\widgets\grid\ButtonedActionColumn;
+    use asb\yii2\assets\CommonAsset;
 
-$tc = $this->context->module->tcModule;
+    use asb\yii2\modules\users_0_170112\models\User;
+    use asb\yii2\modules\users_0_170112\models\UserSearch;
+    use asb\yii2\modules\users_0_170112\models\AuthAssignment;
 
-$commonAssets = CommonAsset::register($this);
+    use yii\grid\GridView;
+    use yii\grid\SerialColumn;
+    use yii\grid\ActionColumn;
+    use yii\helpers\Html;
+    use yii\helpers\Url;
+    use yii\helpers\ArrayHelper;
 
-$this->title = Yii::t($tc, 'Users');
-$this->params['breadcrumbs'][] = $this->title;
+    $showEmail = true;
+    $showAuthKey = true;//$showAuthKey = false;
+
+    $showRoles = false;
+    try { // check if auth table(s) exists
+        $showRoles = (boolean)AuthAssignment::find()->count();
+    } catch(\Exception $ex) {}
+
+    $gridHtmlClass = 'users-list-grid';
+
+    $tc = $this->context->module->tcModule;
+
+    $commonAssets = CommonAsset::register($this);
+
+    $this->title = Yii::t($tc, 'Users');
+    $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="user-index">
@@ -44,20 +56,48 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'username',
 
-            'email:email',
-
+            [
+                'attribute' => 'roles',
+                'header' => Yii::t($tc, 'Role(s)'),
+                'value' => function($model, $key, $index, $column) {
+                    if (empty($model->roles)) {
+                        return UserSearch::ROLE_LOGINED;
+                    }
+                    $result = '';
+                    foreach ($model->roles as $role) {
+                        $result .= empty($result) ? '' : ', ';
+                        $result .= $role->item_name;
+                    }
+                    return $result;
+                },
+                'visible' => $showRoles,
+            ],
+            [
+                'attribute' => 'email',
+                'format' => 'email',
+                'visible' => $showEmail,
+            ],
+            [
+                'attribute' => 'auth_key',
+                'contentOptions' => [
+                     'class' => 'small',
+                ],
+                'visible' => $showAuthKey,
+            ],
             [
                 'attribute' => 'created_at',
                 'format' => 'datetime',
+                'contentOptions' => [
+                     'class' => 'small',
+                ],
             ],
-
             [
                 'attribute' => 'updated_at',
                 'format' => 'datetime',
+                'contentOptions' => [
+                     'class' => 'small',
+                ],
             ],
-
-            'auth_key',
-
             [
                 'attribute' => 'status',
                 'value' => function($model, $key, $index, $column) {
@@ -85,9 +125,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     ];
                 },
             ],
-
             [
-                'class' => ActionColumn::className(),
+                //'class' => ActionColumn::className(),
+                'class' => ButtonedActionColumn::className(),
+                //'tc' => $tc,
+                'autosearch' => false,
+                //'buttonSearch' => false,
+
                 'header' => Yii::t($tc, 'Actions'),
                 'headerOptions' => ['class' => 'text-center'],
                 'contentOptions' => ['style' => 'white-space: nowrap;'],

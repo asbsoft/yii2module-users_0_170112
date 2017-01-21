@@ -30,6 +30,8 @@ return [
     'Status changed.'           => 'Статус изменен.',
     "Status didn't change."     => 'Статус не изменен.',
     "Error on field: '{field}'."=> "Ошибка в поле: '{field}'.",
+    'User #{id} deleted.'       => 'Пользователь #{id} удален.',
+    'Deletion user #{id} fail.' => 'Удалить пользователя #{id} не удалось.',
 
 // models
 //LoginForm.php
@@ -59,8 +61,10 @@ return [
     'Password reset token'      => 'Токен обновления пароля',
     'Email'                     => 'Email',
     'Status'                    => 'Статус',
-    'Created at'                => 'Создано в',
-    'Updated at'                => 'Изменено в',
+    //'Created at'                => 'Создан в',
+    'Created at'                => 'Создан',
+    //'Updated at'                => 'Изменен в',
+    'Updated at'                => 'Изменен',
 
 // views/main
 //login.php
@@ -88,6 +92,7 @@ return [
 //index.php
     '-all-'                     => '-все-',
   //'Create User'               => 'Создать пользователя',
+    'Role(s)'                   => 'Роли',
     'Actions'                   => 'Действия',
     'Are you sure to change status?'
                                 => 'Ви уверены, что хотите изменить статус?',

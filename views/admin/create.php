@@ -4,6 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model asb\yii2\modules\users_0_170112\models\User */
+/* @var $rolesModels empty */
 
 $tc = $this->context->module->tcModule;
 
@@ -17,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'rolesModels' => $rolesModels,
     ]) ?>
 
 </div>

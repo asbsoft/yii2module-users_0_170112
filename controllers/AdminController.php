@@ -4,7 +4,10 @@ namespace asb\yii2\modules\users_0_170112\controllers;
 
 use asb\yii2\modules\users_0_170112\models\LoginForm;
 use asb\yii2\modules\users_0_170112\models\User;
+use asb\yii2\modules\users_0_170112\models\UserWithRoles;
 use asb\yii2\modules\users_0_170112\models\UserSearch;
+use asb\yii2\modules\users_0_170112\models\AuthAssignment;
+use asb\yii2\modules\users_0_170112\models\AuthItem;
 
 use Yii;
 use asb\yii2\controllers\BaseAdminController;
@@ -18,6 +21,20 @@ use yii\helpers\ArrayHelper;
  */
 class AdminController extends BaseAdminController
 {
+    public $showRoles = false;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+
+        try { // check if auth tables exists
+            AuthItem::find()->count();
+            $this->showRoles = (boolean)AuthAssignment::find()->count();
+        } catch(\Exception $ex) {}
+    }
     /**
      * @inheritdoc
      */
@@ -110,6 +127,7 @@ class AdminController extends BaseAdminController
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'rolesModels' => [],
             ]);
         }
     }
@@ -125,12 +143,33 @@ class AdminController extends BaseAdminController
         $model = $this->findModel($id);
         $model->pageSize = intval($this->module->params['pageSizeAdmin']);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $post = Yii::$app->request->post();//if(!empty($post)){var_dump($post);exit;}
+        
+        if ($model->load($post) && $model->save()) {
             //return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirect(['index', 'page' => $model->page, 'id' => $model->id]);
         } else {
+            $rolesModels = [];
+            if ($this->showRoles && !$model->isNewRecord) {
+                $allRoles = AuthItem::find()->where(['like', 'name', 'role'])->all();//var_dump($allRoles);exit;
+                foreach ($allRoles as $role) {
+                    $data = [
+                        'item_name' => $role->name,
+                        'user_id'   => $model->id,
+                    ];
+                    $next = AuthAssignment::find()->where($data)->one();//
+                    if (empty($next)) {
+                        $data['value'] = false;
+                        $next = new AuthAssignment($data);
+                    } else {
+                        $next->value = true;
+                    }//var_dump($next->attributes);var_dump($next->value);
+                    $rolesModels[] = $next;
+                }
+            }//var_dump($rolesModels);exit;
             return $this->render('update', [
                 'model' => $model,
+                'rolesModels' => $rolesModels,
             ]);
         }
     }
@@ -143,9 +182,16 @@ class AdminController extends BaseAdminController
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        $model = $this->findModel($id);
+        $model->pageSize = intval($this->module->params['pageSizeAdmin']);
+        $page = $model->calcPage();
+        $result = $model->delete();
+        if ($result) {
+            Yii::$app->session->setFlash('success', Yii::t($this->tcModule, 'User #{id} deleted.', ['id' => $id]));
+        } else {
+            Yii::$app->session->setFlash('error', Yii::t($this->tcModule, 'Deletion user #{id} fail.', ['id' => $id]));
+        }
+        return $this->redirect(['index', 'id' => $id, 'page' => $page]);
     }
 
     /**
@@ -185,22 +231,6 @@ class AdminController extends BaseAdminController
     }
 
     /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return User the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = User::findOne($id)) !== null) {
-            return $model;
-        } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
-
-    /**
      * Logs in a user.
      *
      * @return mixed
@@ -234,5 +264,22 @@ class AdminController extends BaseAdminController
 
         return $this->goHome();
     }
+
+    /**
+     * Finds the User model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return User the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = UserWithRoles::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
 
 }

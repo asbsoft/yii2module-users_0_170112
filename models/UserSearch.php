@@ -2,6 +2,7 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
+
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -10,8 +11,13 @@ use asb\yii2\modules\users_0_170112\models\User;
 /**
  * UserSearch represents the model behind the search form about `asb\yii2\modules\users_0_170112\models\User`.
  */
-class UserSearch extends User
+//class UserSearch extends User
+class UserSearch extends UserWithRoles
 {
+    const ROLE_LOGINED = '@';
+
+    public $roles;
+    
     /**
      * @inheritdoc
      */
@@ -20,7 +26,8 @@ class UserSearch extends User
         return [
             [['id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email'], 'safe'],
-          //[['email_confirm_token'], 'safe'],
+            //[['email_confirm_token'], 'safe'],
+            [['roles'], 'safe'],
         ];
     }
 
@@ -30,7 +37,9 @@ class UserSearch extends User
     public function scenarios()
     {
         // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
+        //return Model::scenarios();
+        //return User::scenarios();
+        return UserWithRoles::scenarios();
     }
 
     /**
@@ -42,7 +51,9 @@ class UserSearch extends User
      */
     public function search($params)
     {
-        $query = User::find();
+
+        //$query = User::find();
+        $query = UserWithRoles::find();
 
         // add conditions that should always apply here
 
@@ -73,6 +84,17 @@ class UserSearch extends User
             ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
             ->andFilterWhere(['like', 'email', $this->email]);
 
+        // looking for roles
+        if (!empty($this->roles)) {
+            $query->alias('user')->leftJoin(['role' => AuthAssignment::tableName()], "user.id = role.user_id");
+            if ($this->roles == self::ROLE_LOGINED) {
+                $query->andWhere(['item_name' => null]);
+            } else {
+                $query->andFilterWhere(['like', 'item_name', $this->roles]);
+            }
+        }
+
+        //list($sql, $sqlParams) = Yii::$app->db->queryBuilder->build($query);var_dump($sql);var_dump($sqlParams);
         return $dataProvider;
     }
 }
