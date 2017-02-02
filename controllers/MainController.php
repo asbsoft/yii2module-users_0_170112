@@ -164,7 +164,12 @@ class MainController extends BaseController
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        if (!Yii::$app->user->enableAutoLogin) $model->rememberMe = false;
+
+        $period = isset($this->module->params['loginFrontendKeepPeriodSec'])
+            ? intval($this->module->params['loginFrontendKeepPeriodSec'])
+            : null;
+        if ($model->load(Yii::$app->request->post()) && $model->login($period)) {
             return $this->goBack();
         } else {
             return $this->render('login', [

@@ -38,6 +38,7 @@ return [
     'Incorrect username or password.'
                                 => 'Неправильное имя или пароль',
   //'Password'                  => 'Пароль',
+    'Remember me'               => 'Запомнить меня',
 //ProfileForm.php
     'Password'                  => 'Пароль',
     'Old password'              => 'Старый пароль',

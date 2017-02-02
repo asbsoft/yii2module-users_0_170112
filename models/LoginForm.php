@@ -12,13 +12,15 @@ use yii\helpers\ArrayHelper;
  */
 class LoginForm extends DataModel
 {
-    public $username;
-    public $password;
+    public $loginPeriod = 2592000; // default: 1 month = 3600 * 24 * 30
     public $rememberMe = true;
 
-    private $_user;
+    public $username;
+    public $password;
 
     public static $tcCommon;
+
+    private $_user;
 
     /**
      * @inheritdoc
@@ -55,6 +57,7 @@ class LoginForm extends DataModel
 
         return ArrayHelper::merge($user->attributeLabels(), [
             'password' => Yii::t(static::$tcCommon, 'Password'),
+            'rememberMe' => Yii::t(static::$tcCommon, 'Remember me'),
         ]);
     }
 
@@ -77,14 +80,18 @@ class LoginForm extends DataModel
 
     /**
      * Logs in a user using the provided username and password.
-     *
+     * @var integer|null $period in seconds to keep login, if null use default value
      * @return bool whether the user is logged in successfully
      */
-    public function login()
+    public function login($period = null)
     {
+        if (!isset($period)) { // $period may be 0
+            $period = $this->loginPeriod;
+        }//var_dump($period);exit;
+        
         $result = $this->validate();//var_dump($result);exit;
         if ($result) {
-            $result = Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);//var_dump($result);exit;
+            $result = Yii::$app->user->login($this->getUser(), $this->rememberMe ? $period : 0);//var_dump($result);exit;
             return $result;
         } else {
             return false;

@@ -4,6 +4,12 @@ return [
     'label'   => 'Simple users manager',
     'version' => '0.170112',
 
+    /** Keep login period for admin */
+    'loginAdminKeepPeriodSec' => 28800, // 8 hours: 3600 * 8
+
+    /** Keep login period for frontend */
+    'loginFrontendKeepPeriodSec' => 26784000, // 1 full month = 3600 * 24 * 31
+
     /** Confirm letter's sender E-mail */
     'emailConfirmFrom' => Yii::$app->params['adminEmail'],
 

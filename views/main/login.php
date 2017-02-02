@@ -24,7 +24,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?= $form->field($model, 'password')->passwordInput() ?>
 
+              <?php if (Yii::$app->user->enableAutoLogin): ?>
                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
+              <?php endif; ?>
 
                 <div class="form-group">
                     <?= Html::submitButton(Yii::t($tc, 'Login'), ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>

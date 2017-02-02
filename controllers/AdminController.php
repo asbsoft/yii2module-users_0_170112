@@ -241,10 +241,14 @@ class AdminController extends BaseAdminController
             return $this->goHome();
         }
 
+        $period = isset($this->module->params['loginAdminKeepPeriodSec'])
+            ? intval($this->module->params['loginAdminKeepPeriodSec'])
+            : null;
+
         $model = new LoginForm();
         $model->rememberMe = false;
 
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        if ($model->load(Yii::$app->request->post()) && $model->login($period)) {
             return $this->goBack();
         } else {
             return $this->render('login', [
