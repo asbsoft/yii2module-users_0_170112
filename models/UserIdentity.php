@@ -19,7 +19,7 @@ class UserIdentity extends User implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return null; //todo
+        return static::findOne(['auth_key' => $token, 'status' => User::STATUS_ACTIVE]);
     }
 
     /**
