@@ -126,7 +126,7 @@ class MainController extends BaseController
     {
         try {
             $isValid = parent::beforeAction($action);
-        } catch (MethodNotAllowedHttpException $ex) {//var_dump($action->id);var_dump($ex->getMessage());exit;
+        } catch (MethodNotAllowedHttpException $ex) {
             $isValid = false;
             $msg = $ex->getMessage();
             if ($action->id == 'signup') {
@@ -141,17 +141,6 @@ class MainController extends BaseController
         }
         return $isValid;
     }
-
-    /**
-     * Renders the index view for the module
-     * @return string
-     */
-/*
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
-*/
 
     /**
      * Logs in a user.
@@ -207,7 +196,7 @@ class MainController extends BaseController
         if ($loaded && $model->save(true)) {
             Yii::$app->mailer->setViewPath(__DIR__ . '/../views/_mail');
             $message = Yii::$app->mailer->compose('confirm', ['model' => $model]);
-            $subject = Yii::t($this->tcModule, 'Confirm you registration on site') . ' ' . Yii::$app->request->hostName;//var_dump($subject);exit;
+            $subject = Yii::t($this->tcModule, 'Confirm you registration on site') . ' ' . Yii::$app->request->hostName;
             $message->setSubject($subject);
             $message->setFrom($this->emailConfirmFrom);
             $message->setTo($model->email);
@@ -232,7 +221,7 @@ class MainController extends BaseController
      */
     public function actionProfile()
     {
-        $user = $this->findModel(Yii::$app->user->id);//var_dump($user);exit;
+        $user = $this->findModel(Yii::$app->user->id);
         if (empty($user)) {
             return $this->goBack();
         }
@@ -244,12 +233,11 @@ class MainController extends BaseController
         $post = Yii::$app->request->post();
         $loaded = $model->load($post);
         if ($loaded) {
-            $saved = $model->save(false);//var_dump($saved);exit;
+            $saved = $model->save(false);
             if ($saved !== false) {
                 $msg = ($saved === 0) ? Yii::t($this->tcModule, 'Profile not change.')
                                       : Yii::t($this->tcModule, 'Profile modified.');
                 Yii::$app->session->setFlash('success', $msg);
-                //return $this->goBack();
                 return $this->goHome();
             }
         }
@@ -266,23 +254,20 @@ class MainController extends BaseController
         $user = $this->findModel([
             'auth_key' => $token,
             'status' => User::STATUS_REGISTERED,
-        ]);//if(empty($user))var_dump($user);else var_dump($user->attributes);exit;
+        ]);
 
         if (empty($user)) {
-            //throw new NotFoundHttpException(Yii::t($this->tcModule, 'Such unconfirmed user not found or already confirmed.'));
             Yii::$app->session->setFlash('error',
                 Yii::t($this->tcModule, 'Such unconfirmed user not found or already confirmed.')
                 . ' ' . Yii::t($this->tcModule, 'Try to login or signup again.')
             );
             return $this->redirect(['login']);
-            //return $this->goHome();
         }
 
         if ($this->confirmExpireDays) {
             $confirmExpirePeriod = 60 * 60 * 24 * $this->confirmExpireDays;
             if (time() > ($user->created_at + $confirmExpirePeriod)) {
                 $user->delete();
-                //throw new NotFoundHttpException(Yii::t($this->tcModule, 'Token expired please register again.'));
                 Yii::$app->session->setFlash('error', Yii::t($this->tcModule, 'Token expired please register again.'));
                 return $this->redirect(['signup']);
             }

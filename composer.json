@@ -1,0 +1,24 @@
+{
+    "name": "asbsoft/yii2module-users_0_170112",
+    "version": "0.*",
+    "description": "Simple users management module",
+    "keywords": ["yii2"],
+    "type": "yii2-module",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Alexandr Belogolovsky",
+            "email": "ab2014box@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "yiisoft/yii2": "~2.0.10",
+        "asbsoft/yii2-common": ">=1.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "asb\\yii2\\modules\\users_0_170112\\": ""
+        }
+    }
+}

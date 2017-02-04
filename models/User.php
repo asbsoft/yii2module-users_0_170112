@@ -128,10 +128,8 @@ class User extends DataModel
      * @inheritdoc
      */
     public function beforeSave($insert)
-    {//echo __METHOD__."($insert)";
+    {
         if (!parent::beforeSave($insert)) return false;
-
-        //var_dump($this->attributes);var_dump($this->password);var_dump($this->change_auth_key);exit;
 
         if (!empty($this->password)) {
             $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
@@ -144,7 +142,7 @@ class User extends DataModel
             if ($this->change_auth_key) {
                 $this->auth_key = $this->generateAuthKey();
             }
-        }//var_dump($this->attributes);//exit;
+        }
 
         return true;
     }

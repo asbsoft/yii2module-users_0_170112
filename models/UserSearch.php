@@ -94,7 +94,6 @@ class UserSearch extends UserWithRoles
             }
         }
 
-        //list($sql, $sqlParams) = Yii::$app->db->queryBuilder->build($query);var_dump($sql);var_dump($sqlParams);
         return $dataProvider;
     }
 }

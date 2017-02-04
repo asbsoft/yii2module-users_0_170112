@@ -5,7 +5,6 @@ namespace asb\yii2\modules\users_0_170112\models;
 use asb\yii2\modules\users_0_170112\Module;
 use asb\yii2\modules\users_0_170112\models\User;
 
-//use asb\yii2\models\DataModel; // extends ActiveRecord - need table
 use yii\base\Model;
 
 use Yii;
@@ -36,9 +35,6 @@ class ProfileForm extends Model
     /** Edited fields at form */
     public $fieldsForm = ['username', 'password_old', 'password_new', 'password_repeat', 'email', 'change_auth_key'];
 
-/** Fields of User model can change */
-//public $fieldsCanChange = ['username', 'password_new', 'email', 'auth_key'];
-
     /** Translation category */
     public $tc;
 
@@ -53,9 +49,7 @@ class ProfileForm extends Model
      * @inheritdoc
      */
     public function init()
-    {//echo __METHOD__;var_dump($this->user->isNewRecord);
-        //var_dump($this->tc);var_dump($this->scenario);var_dump($this->captchaActionUid);exit;
-
+    {
         parent::init();
 
         if ($this->user->isNewRecord) {
@@ -71,10 +65,9 @@ class ProfileForm extends Model
 
         // standart model yii\base\Model hasn't property $this->tcModule
         if (empty($this->tc)) {
-            $module = Module::getModuleByClassname(Module::className());//var_dump($module::className());
+            $module = Module::getModuleByClassname(Module::className());
             $this->tc = $module->tcModule;
-        }//var_dump($this->tc);
-    
+        }
     }
 
     /**
@@ -143,8 +136,8 @@ class ProfileForm extends Model
      * @return boolean 
      */
     public function validate($attributeNames = null, $clearErrors = true)
-    {//echo __METHOD__.'<br>';
-        if (!$this->isNewRecord) {//echo"#{$this->user->id}:{$this->user->username}/{$this->password_old}[{$this->user->password_hash}]<br>";
+    {
+        if (!$this->isNewRecord) {
             if (empty($this->password_old)) {
                 $this->addError('password_old', Yii::t($this->tc, 'Old password required'));
                 return false;
@@ -156,7 +149,7 @@ class ProfileForm extends Model
             }
         }
 
-        $result = parent::validate($attributeNames, $clearErrors);//echo"parent::validate():";var_dump($result);var_dump($this->errors);
+        $result = parent::validate($attributeNames, $clearErrors);
         return $result;
     }
 
@@ -165,7 +158,7 @@ class ProfileForm extends Model
      * @return integer|false the number of rows affected, or false if validation fails
      */
     public function save($isNewRecord)
-    {//echo __METHOD__."($isNewRecord)<br>";
+    {
         if ($this->validate($this->fieldsForm)) {
             $user = $this->user;
             $data = [];
@@ -176,26 +169,22 @@ class ProfileForm extends Model
             $data[$fn]['email']           = $this->email;
             $data[$fn]['password']        = $this->password_new;
             $data[$fn]['change_auth_key'] = $this->change_auth_key;
-            //var_dump($data);exit;
 
             $loaded = $user->load($data);
-            //$fieldsCanChange = array_keys($data[$fn]); //!! + 'auth_key'
             if ($isNewRecord) {
                 $user->scenario = $user::SCENARIO_CREATE;
-                //$saved = $user->insert(true, $fieldsCanChange);
                 $user->status = User::STATUS_REGISTERED;
                 $saved = $user->insert();
             } else {
-                //$saved = $user->update(true, $fieldsCanChange);
                 $saved = $user->update();
             }
-            if ($loaded && $saved) {//var_dump($user->attributes);var_dump($this->attributes);exit;
-                $this->auth_key = $user->auth_key; //!!
+            if ($loaded && $saved) {
+                $this->auth_key = $user->auth_key;
                 return $saved;
-            } else {//var_dump($user->errors);
+            } else {
                 $this->addErrors($user->errors);
             }
-        }//var_dump($this->errors);exit;
+        }
         return false;
     }
 

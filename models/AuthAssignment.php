@@ -2,7 +2,6 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
-//use asb\yii2\models\DataModel; // problem with calcPage()
 use yii\db\ActiveRecord as DataModel;
 
 use Yii;
@@ -18,7 +17,6 @@ use Yii;
  */
 class AuthAssignment extends DataModel
 {
-
     public $value;
 
     /**
@@ -68,18 +66,10 @@ class AuthAssignment extends DataModel
     }
 
     /**
-     * @inheritdoc
-     * @return AuthAssignmentQuery the active query used by this AR class.
+     * @return boolean
      */
-/*
-    public static function find()
-    {
-        return new AuthAssignmentQuery(get_called_class());
-    }
-*/
-
     public static function deleteRoles($user)
-    {//echo __METHOD__."($user->id)";
+    {
         $result = true;
         $models = static::find()->where(['user_id' => $user->id])->all();
         foreach ($models as $model) {
@@ -95,12 +85,10 @@ class AuthAssignment extends DataModel
      * @return boolean
      */
     public static function setRoles($user, $roles)
-    {//echo __METHOD__."($user->id)";var_dump($roles);
+    {
         $result = true;
 
         $result = static::deleteRoles($user);
-
-        //$allRoles = AuthItem::find()->where(['like', 'name', 'role'])->all();//var_dump($allRoles);exit;
 
         foreach ($roles as $roleName => $data) {
             if ((boolean)$data['value']) {
@@ -114,7 +102,7 @@ class AuthAssignment extends DataModel
                     $user->addErrors($role->errors);
                 }
             }
-        }//var_dump($result);var_dump($user->errors);exit;
+        }
 
         return $result;
     }

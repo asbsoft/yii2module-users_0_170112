@@ -72,7 +72,7 @@ class AdminController extends BaseAdminController
      * @return mixed
      */
     public function actionIndex($page = 1, $id = 0)
-    {//echo __METHOD__;var_dump($this->module->params);
+    {
         $searchModel = new UserSearch();
         $params = Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search($params);
@@ -122,7 +122,6 @@ class AdminController extends BaseAdminController
         $model->pageSize = intval($this->module->params['pageSizeAdmin']);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirect(['index', 'page' => $model->page, 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -143,30 +142,29 @@ class AdminController extends BaseAdminController
         $model = $this->findModel($id);
         $model->pageSize = intval($this->module->params['pageSizeAdmin']);
 
-        $post = Yii::$app->request->post();//if(!empty($post)){var_dump($post);exit;}
+        $post = Yii::$app->request->post();
         
         if ($model->load($post) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirect(['index', 'page' => $model->page, 'id' => $model->id]);
         } else {
             $rolesModels = [];
             if ($this->showRoles && !$model->isNewRecord) {
-                $allRoles = AuthItem::find()->where(['like', 'name', 'role'])->all();//var_dump($allRoles);exit;
+                $allRoles = AuthItem::find()->where(['like', 'name', 'role'])->all();
                 foreach ($allRoles as $role) {
                     $data = [
                         'item_name' => $role->name,
                         'user_id'   => $model->id,
                     ];
-                    $next = AuthAssignment::find()->where($data)->one();//
+                    $next = AuthAssignment::find()->where($data)->one();
                     if (empty($next)) {
                         $data['value'] = false;
                         $next = new AuthAssignment($data);
                     } else {
                         $next->value = true;
-                    }//var_dump($next->attributes);var_dump($next->value);
+                    }
                     $rolesModels[] = $next;
                 }
-            }//var_dump($rolesModels);exit;
+            }
             return $this->render('update', [
                 'model' => $model,
                 'rolesModels' => $rolesModels,
@@ -201,15 +199,14 @@ class AdminController extends BaseAdminController
      * @return mixed
      */
     public function actionChangeStatus($id, $value)
-    {//echo __METHOD__."($id, $value)";exit;
+    {
         $model = $this->findModel($id);
         if (empty($model)) {
             Yii::$app->session->setFlash('error', Yii::t($this->tcModule, 'User {id} not found.', ['id' => $id]));
         } else {
             $model->status = $value;
             $model->pageSize = intval($this->module->params['pageSizeAdmin']);
-            //$result = $model->save(); // will error if rules for another fields was changed
-            $result = $model->save(true, ['status']); // update only stasus field
+            $result = $model->save(true, ['status']); // update only status field
             if ($result) {
                 Yii::$app->session->setFlash('success', Yii::t($this->tcModule, 'Status changed.'));
             } else {
@@ -284,6 +281,5 @@ class AdminController extends BaseAdminController
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
-
 
 }

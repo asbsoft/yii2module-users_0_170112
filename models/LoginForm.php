@@ -87,11 +87,11 @@ class LoginForm extends DataModel
     {
         if (!isset($period)) { // $period may be 0
             $period = $this->loginPeriod;
-        }//var_dump($period);exit;
+        }
         
-        $result = $this->validate();//var_dump($result);exit;
+        $result = $this->validate();
         if ($result) {
-            $result = Yii::$app->user->login($this->getUser(), $this->rememberMe ? $period : 0);//var_dump($result);exit;
+            $result = Yii::$app->user->login($this->getUser(), $this->rememberMe ? $period : 0);
             return $result;
         } else {
             return false;
@@ -107,7 +107,7 @@ class LoginForm extends DataModel
     {
         if ($this->_user === null) {
             $this->_user = UserIdentity::findByUsername($this->username);
-        }//var_dump($this->_user);exit;
+        }
 
         return $this->_user;
     }
