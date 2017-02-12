@@ -2,10 +2,11 @@
 
 namespace asb\yii2\modules\users_0_170112\controllers;
 
-use asb\yii2\controllers\BaseController;
 use asb\yii2\modules\users_0_170112\models\User;
 use asb\yii2\modules\users_0_170112\models\LoginForm;
 use asb\yii2\modules\users_0_170112\models\ProfileForm;
+
+use asb\yii2\common_2_170212\controllers\BaseController;
 
 use Yii;
 use yii\helpers\ArrayHelper;

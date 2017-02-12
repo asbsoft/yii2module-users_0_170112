@@ -1,6 +1,6 @@
 <?php
 
-use asb\yii2\web\UserIdentity;
+use asb\yii2\common_2_170212\web\UserIdentity;
 
 use yii\db\Migration;
 
@@ -13,8 +13,9 @@ class m160524_093500_addrole_to_admin extends Migration
     {
         parent::init();
 
-        Yii::setAlias('@asb/yii2cms', '@vendor/asb/yii2cms');
-        Yii::setAlias('@asb/yii2/modules', '@vendor/asb/yii2modules');//var_dump(Yii::$aliases);exit;
+        //Yii::setAlias('@asb/yii2/cms_3_170211', '@vendor/asbsoft/yii2-cms_3_170211');
+        Yii::setAlias('@asb/yii2/common_2_170212', '@vendor/asbsoft/yii2-common_2_170212');
+        //Yii::setAlias('@asb/yii2/modules', '@vendor/asbsoft/yii2module');
     }
 
     // Use safeUp/safeDown to run migration code within a transaction

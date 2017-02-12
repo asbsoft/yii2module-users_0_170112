@@ -3,7 +3,7 @@
 /* @var $this yii\web\View */
 /* @var $model ProfileForm */
 
-    use asb\yii2\assets\CommonAsset;
+    use asb\yii2\common_2_170212\assets\CommonAsset;
 
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;

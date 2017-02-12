@@ -2,10 +2,10 @@
 
 namespace asb\yii2\modules\users_0_170112;
 
-use asb\yii2\base\UniModule;
+use asb\yii2\common_2_170212\base\UniModule;
 
 /**
- * users_0_170112 module definition class
+ * Module definition class.
  *
  * @author ASB <ab2014box@gmail.com>
  */

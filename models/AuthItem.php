@@ -2,7 +2,6 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
-//use asb\yii2\models\DataModel;
 use yii\db\ActiveRecord as DataModel;
 
 use Yii;
@@ -76,34 +75,6 @@ class AuthItem extends DataModel
     /**
      * @return \yii\db\ActiveQuery
      */
-/*
-    public function getRuleName()
-    {
-        return $this->hasOne(AuthRule::className(), ['name' => 'rule_name']);
-    }
-*/
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-/*
-    public function getAuthItemChildren()
-    {
-        return $this->hasMany(AuthItemChild::className(), ['parent' => 'name']);
-    }
-*/
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-/*
-    public function getAuthItemChildren0()
-    {
-        return $this->hasMany(AuthItemChild::className(), ['child' => 'name']);
-    }
-*/
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getChildren()
     {
         return $this->hasMany(AuthItem::className(), ['name' => 'child'])->viaTable('{{%auth_item_child}}', ['parent' => 'name']);
@@ -116,4 +87,5 @@ class AuthItem extends DataModel
     {
         return $this->hasMany(AuthItem::className(), ['name' => 'parent'])->viaTable('{{%auth_item_child}}', ['child' => 'name']);
     }
+
 }

@@ -6,7 +6,6 @@ use yii\db\Migration;
 
 class m170112_200500_create_user_table extends Migration
 {
-
     protected $tableName;
     protected $idxNamePrefix;
 
@@ -14,8 +13,9 @@ class m170112_200500_create_user_table extends Migration
     {
         parent::init();
 
-        Yii::setAlias('@asb/yii2', '@vendor/asb/yii2common');
-        Yii::setAlias('@asb/yii2/modules', '@vendor/asb/yii2modules');
+        //Yii::setAlias('@asb/yii2/common_2_170212', '@vendor/asbsoft/yii2-common_2_170212');
+        //Yii::setAlias('@asb/yii2/cms_3_170211', '@vendor/asbsoft/yii2-cms_3_170211');
+        //Yii::setAlias('@asb/yii2/modules', '@vendor/asbsoft/yii2module');
 
         $this->tableName = Model::tableName();
 

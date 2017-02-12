@@ -4,11 +4,11 @@ use asb\yii2\modules\users_0_170112\models\User as Model;
 
 use yii\db\Migration;
 
-class m170112_201500_insert_user_admin extends Migration
+class m170112_202001_insert_user_demo extends Migration
 {
-    const NAME = 'admin';
-    const PSW  = 'mda321';
-    const ID = 100;
+    const NAME = 'demo';
+    const PSW  = 'demo12';
+    const ID = 125;
 
     protected $tableName;
 

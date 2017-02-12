@@ -3,7 +3,7 @@
 $adminUrlPrefix = empty($params['adminPath']) ? '' : $params['adminPath'] . '/';
 
 return [
-    'layoutPath' => '@asb/yii2cms/modules/sys/views/layouts',
+    'layoutPath' => '@asb/yii2/cms_3_170211/modules/sys/views/layouts',
     'layouts' => [
         'frontend'  => 'main',
         'backend'  => 'backend/main',

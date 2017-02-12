@@ -9,8 +9,9 @@ use asb\yii2\modules\users_0_170112\models\UserSearch;
 use asb\yii2\modules\users_0_170112\models\AuthAssignment;
 use asb\yii2\modules\users_0_170112\models\AuthItem;
 
+use asb\yii2\common_2_170212\controllers\BaseAdminController;
+
 use Yii;
-use asb\yii2\controllers\BaseAdminController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;

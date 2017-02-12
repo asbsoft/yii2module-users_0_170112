@@ -5,10 +5,9 @@ namespace asb\yii2\modules\users_0_170112\models;
 use asb\yii2\modules\users_0_170112\Module;
 use asb\yii2\modules\users_0_170112\models\User;
 
-use yii\base\Model;
-
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\base\Model;
 
 /**
  * Profile form.

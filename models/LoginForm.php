@@ -2,7 +2,7 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
-use asb\yii2\models\DataModel;
+use asb\yii2\common_2_170212\models\DataModel;
 
 use Yii;
 use yii\helpers\ArrayHelper;

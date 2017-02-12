@@ -1,7 +1,7 @@
 <?php
 
-use asb\yii2\rbac\IsRootRule;
-use asb\yii2\rbac\IsAdminRule;
+use asb\yii2\common_2_170212\rbac\IsRootRule;
+use asb\yii2\common_2_170212\rbac\IsAdminRule;
 
 use yii\db\Migration;
 
@@ -11,8 +11,9 @@ class m160524_092000_add_roles_root_admin extends Migration
     {
         parent::init();
 
-        Yii::setAlias('@asb/yii2cms', '@vendor/asb/yii2cms');
-        Yii::setAlias('@asb/yii2/modules', '@vendor/asb/yii2modules');
+        //Yii::setAlias('@asb/yii2/cms_3_170211', '@vendor/asbsoft/yii2-cms_3_170211');
+        Yii::setAlias('@asb/yii2/common_2_170212', '@vendor/asbsoft/yii2-common_2_170212');
+        //Yii::setAlias('@asb/yii2/modules', '@vendor/asbsoft/yii2module');
     }
 
     // Use safeUp/safeDown to run migration code within a transaction
