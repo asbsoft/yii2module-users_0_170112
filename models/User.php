@@ -22,7 +22,7 @@ use Yii;
  */
 class User extends DataModel
 {
-    const TABLE_NAME = 'user'; //!! single place with table name, @see DataModel::tableName()
+    const TABLE_NAME = 'user'; // single place with raw table name without prefix, @see DataModel::tableName()
 
     const STATUS_REGISTERED = -20;
     const STATUS_WAIT       = -10;

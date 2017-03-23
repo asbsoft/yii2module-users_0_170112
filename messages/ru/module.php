@@ -1,6 +1,7 @@
 <?php
 //ru
 return [
+    'Simple users manager'      => 'Простой менеджер пользователей',
 // controllers
 //MainController.php
     'Confirm you registration on site'
@@ -84,6 +85,7 @@ return [
 //_form.php
     'Create'                    => 'Создать',
     'Update'                    => 'Обновить',
+    'Roles'                     => 'Роли',
 //_search.php
     'Search'                    => 'Поиск',
     'Reset'                     => 'Стереть',

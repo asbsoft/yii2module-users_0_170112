@@ -53,7 +53,11 @@
 
         <?php foreach ($rolesModels as $roleModel): ?>
             <div class="col-xs-2">
-            <?= $form->field($roleModel, "[{$roleModel->item_name}]value")->checkbox([
+            <?= $form->field($roleModel, "[{$roleModel->item_name}]value", [
+                    'options' => [
+                        'class' => 'text-nowrap',
+                    ],
+                ])->checkbox([
                     'label' => $roleModel->item_name,
                 ]) ?>
             </div>

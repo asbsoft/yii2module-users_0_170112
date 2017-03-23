@@ -15,7 +15,7 @@ return [
 
     'routesConfig' => [ // default: type => prefix|[config]
         'main'  => $type == UniApplication::APP_TYPE_BACKEND  ? false : 'user',
-        'admin' => $adminUrlPrefix . ($type == UniApplication::APP_TYPE_FRONTEND ? false : 'user'),
+        'admin' => $type == UniApplication::APP_TYPE_FRONTEND ? false : ($adminUrlPrefix . 'user'),
     ],
 
     // shared models
