@@ -5,5 +5,5 @@ return [
     '<action:(update|delete|view)>/<id:\d+>'                    => 'admin/<action>',
     '<action:(change-status)>/status-<id:\d+>/<value:\-?\d+>'   => 'admin/<action>',
     '<action:(index|login|logout|change-status|create)>'        => 'admin/<action>',
-    '?'                                                         => 'admin/index',
+    '?'                                                         => 'admin/index', // without URL-normalizer
 ];

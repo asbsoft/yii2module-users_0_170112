@@ -3,5 +3,5 @@
 return [
   //'confirm/<token:.+>' => 'main/confirm',
     '<action:(login|logout|profile|signup|captcha|confirm)>' => 'main/<action>',
-  //'?' => 'main/login',
+  //'?' => 'main/login', // without URL-normalizer
 ];

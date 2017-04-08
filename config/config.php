@@ -7,7 +7,7 @@ $adminUrlPrefix = empty(Yii::$app->params['adminPath']) ? '' : Yii::$app->params
 $type = empty(Yii::$app->type) ? false : Yii::$app->type;//var_dump($type);
 
 return [
-    'layoutPath' => '@asb/yii2/cms_3_170211/modules/sys/views/layouts',
+    //'layoutPath' => '@project/modules/sys/views/layouts',
     'layouts' => [
         'frontend'  => 'main',
         'backend'  => 'backend/main',
