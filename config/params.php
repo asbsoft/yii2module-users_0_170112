@@ -1,5 +1,7 @@
 <?php
 
+use asb\yii2\modules\users_0_170112\models\User;
+
 return [
     'label'   => 'Simple users manager',
     'version' => '0.170112',
@@ -28,5 +30,9 @@ return [
 
     /** Allow user see and regenerate auth key in profile */
     'allowUserUpdateAuthKey' => false,//'allowUserUpdateAuthKey' => true,
+
+    User::className() => [
+        'tableName' => '{{%user}}',
+    ],
 
 ];
