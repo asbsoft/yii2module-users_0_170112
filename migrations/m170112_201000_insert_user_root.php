@@ -16,10 +16,6 @@ class m170112_201000_insert_user_root extends Migration
     {
         parent::init();
 
-        //Yii::setAlias('@asb/yii2/common_2_170212', '@vendor/asbsoft/yii2-common_2_170212');
-        //Yii::setAlias('@asb/yii2/cms_3_170211', '@vendor/asbsoft/yii2-cms_3_170211');
-        //Yii::setAlias('@asb/yii2/modules', '@vendor/asbsoft/yii2module');
-
         $this->tableName = Model::tableName();
     }
     
