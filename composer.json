@@ -1,6 +1,5 @@
 {
     "name": "asbsoft/yii2module-users_0_170112",
-    "version": "0.*",
     "description": "Simple users management module",
     "keywords": ["yii2"],
     "type": "yii2-module",
@@ -16,6 +15,12 @@
         "yiisoft/yii2": "~2.0.10",
         "asbsoft/yii2-common_2_170212": "~2.03"
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/asbsoft/yii2-common_2_170212"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "asb\\yii2\\modules\\users_0_170112\\": ""
