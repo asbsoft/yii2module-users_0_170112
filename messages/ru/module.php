@@ -2,6 +2,8 @@
 //ru
 return [
     'Simple users manager'      => 'Простой менеджер пользователей',
+    'Adminer'                   => 'Админка',
+
 // controllers
 //MainController.php
     'Confirm you registration on site'

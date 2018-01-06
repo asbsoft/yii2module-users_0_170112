@@ -19,6 +19,7 @@
     use yii\helpers\Url;
     use yii\helpers\ArrayHelper;
 
+
     $showEmail = true;
     $showAuthKey = true;//$showAuthKey = false;
 
@@ -33,14 +34,15 @@
 
     $commonAssets = CommonAsset::register($this);
 
-    $this->title = Yii::t($tc, 'Users');
-    $this->params['breadcrumbs'][] = $this->title;
+    $title = Yii::t($tc, 'Users');
+    $this->title = Yii::t($tc, 'Adminer') . ' - ' . $title;
+    $this->params['breadcrumbs'][] = ['label' => $title, 'url' => ['index']];
 
 ?>
 <div class="user-index">
     <div id="loadind" class="collapse text-center media-middle"><img src="<?= $commonAssets->baseUrl ?>/img/wait.gif" /></div>
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($title) ?></h1>
 
     <p>
         <?= Html::a(Yii::t($tc, 'Create User'), ['create'], ['class' => 'btn btn-success']) ?>
