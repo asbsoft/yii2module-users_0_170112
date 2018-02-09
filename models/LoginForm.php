@@ -2,7 +2,7 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
-use asb\yii2\common_2_170212\models\DataModel;
+use asb\yii2\common_2_170212\models\BaseModel;
 
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -10,7 +10,7 @@ use yii\helpers\ArrayHelper;
 /**
  * Login form
  */
-class LoginForm extends DataModel
+class LoginForm extends BaseModel
 {
     public $loginPeriod = 2592000; // default: 1 month = 3600 * 24 * 30
     public $rememberMe = true;
@@ -30,6 +30,11 @@ class LoginForm extends DataModel
         parent::init();
 
         static::$tcCommon = $this->tcModule;
+    }
+
+    public static function tableName()
+    {
+        return '';
     }
 
     /**
