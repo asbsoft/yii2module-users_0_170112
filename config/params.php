@@ -31,6 +31,9 @@ return [
     /** Allow user see and regenerate auth key in profile */
     'allowUserUpdateAuthKey' => false,//'allowUserUpdateAuthKey' => true,
 
+    /** Allow auth key in adminlist */
+  //'showAuthKeyInAdmList' => true,
+
     User::className() => [
         'tableName' => '{{%user}}',
     ],

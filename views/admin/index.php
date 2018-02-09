@@ -21,7 +21,9 @@
 
 
     $showEmail = true;
-    $showAuthKey = true;//$showAuthKey = false;
+
+    $showAuthKey = isset($this->context->module->params['showAuthKeyInAdmList'])
+                 ? $this->context->module->params['showAuthKeyInAdmList'] : false;
 
     $showRoles = false;
     try { // check if auth table(s) exists
