@@ -43,12 +43,9 @@ class LoginForm extends BaseModel
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
-            ['password', 'validatePassword'],
+            ['password', 'validatePassword'], // password is validated by $this->validatePassword()
         ];
     }
 
@@ -58,8 +55,9 @@ class LoginForm extends BaseModel
     public function attributeLabels()
     {
         $user = $this->getUser();
-        if (empty($user)) $user = new User;
-
+        if (empty($user)) {
+            $user = new User;
+        }
         return ArrayHelper::merge($user->attributeLabels(), [
             'password' => Yii::t(static::$tcCommon, 'Password'),
             'rememberMe' => Yii::t(static::$tcCommon, 'Remember me'),
@@ -93,7 +91,7 @@ class LoginForm extends BaseModel
         if (!isset($period)) { // $period may be 0
             $period = $this->loginPeriod;
         }
-        
+
         $result = $this->validate();
         if ($result) {
             $result = Yii::$app->user->login($this->getUser(), $this->rememberMe ? $period : 0);
@@ -116,4 +114,5 @@ class LoginForm extends BaseModel
 
         return $this->_user;
     }
+
 }

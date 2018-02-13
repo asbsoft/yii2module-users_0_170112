@@ -31,9 +31,6 @@ class ProfileForm extends Model
     public $change_auth_key;
     public $verify_code;
 
-    /** Edited fields at form */
-    public $fieldsForm = ['username', 'password_old', 'password_new', 'password_repeat', 'email', 'change_auth_key'];
-
     /** Translation category */
     public $tc;
 
@@ -84,24 +81,21 @@ class ProfileForm extends Model
     {
         return [
             ['username', 'string', 'min' => $this->minUsernameLength, 'max' => 255],
-            [['username', 'password_new'], 'required', 'on' => self::SCENARIO_SELF_CREATE],
-            [['email'], 'required'],
+            [['username', 'password_new', 'password_repeat', 'email'], 'required', 'on' => self::SCENARIO_SELF_CREATE],
+            ['verify_code', 'captcha',
+                'captchaAction' => $this->captchaActionUid,
+                'on' => self::SCENARIO_SELF_CREATE,
+            ],
 
             [['password_old', 'password_new', 'password_repeat'], 'string',
                 'min' => $this->minPasswordLength, 'max' => $this->maxPasswordLength,
             ],
             ['password_repeat', 'compare', 'compareAttribute' => 'password_new'],
 
-            [['email', 'password_hash'], 'string', 'max' => 255],
+            ['email', 'string', 'max' => 255],
             ['email', 'email'],
 
             ['change_auth_key', 'boolean'],
-
-            ['verify_code', 'captcha',
-                'skipOnEmpty' => false,
-                'caseSensitive' => false,
-                'captchaAction' => $this->captchaActionUid,
-            ],
         ];
     }
 
@@ -158,7 +152,7 @@ class ProfileForm extends Model
      */
     public function save($isNewRecord)
     {
-        if ($this->validate($this->fieldsForm)) {
+        if ($this->validate()) {
             $user = $this->user;
             $data = [];
             $fn = $user->formName();

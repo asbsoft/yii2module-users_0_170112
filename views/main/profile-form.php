@@ -23,7 +23,9 @@
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+              //'enableClientValidation' => false,
+          ]); ?>
 
     <?php if ($model->isNewRecord): ?>
         <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
