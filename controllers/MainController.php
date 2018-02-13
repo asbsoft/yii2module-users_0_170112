@@ -234,7 +234,7 @@ class MainController extends BaseController
         $post = Yii::$app->request->post();
         $loaded = $model->load($post);
         if ($loaded) {
-            $saved = $model->save(false);
+            $saved = $model->save($isNewRecord = false);
             if ($saved !== false) {
                 $msg = ($saved === 0) ? Yii::t($this->tcModule, 'Profile not change.')
                                       : Yii::t($this->tcModule, 'Profile modified.');
