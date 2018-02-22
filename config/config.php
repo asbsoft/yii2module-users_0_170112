@@ -21,10 +21,10 @@ return [
 
     // shared models
     'models' => [ // alias => class name or object array
-        'UserIdentity' => 'asb\yii2\modules\users_0_170112\models\UserIdentity',
-        'ProfileForm' => 'project\modules\sys\modules\user\models\ProfileForm',
-        'LoginForm' => 'project\modules\sys\modules\user\models\LoginForm',
-        'User' => 'asb\yii2\modules\users_0_170112\models\User',
+        'UserIdentity'  => 'asb\yii2\modules\users_0_170112\models\UserIdentity',
+        'ProfileForm'   => 'asb\yii2\modules\users_0_170112\models\ProfileForm',
+        'LoginForm'     => 'asb\yii2\modules\users_0_170112\models\LoginForm',
+        'User'          => 'asb\yii2\modules\users_0_170112\models\User',
         'UserWithRoles' => 'asb\yii2\modules\users_0_170112\models\UserWithRoles',
     ],
 ];
