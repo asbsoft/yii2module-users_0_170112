@@ -3,7 +3,6 @@
 namespace asb\yii2\modules\users_0_170112\controllers;
 
 use asb\yii2\modules\users_0_170112\models\User;
-use asb\yii2\modules\users_0_170112\models\LoginForm;
 use asb\yii2\modules\users_0_170112\models\ProfileForm;
 
 use asb\yii2\common_2_170212\controllers\BaseController;
@@ -145,22 +144,27 @@ class MainController extends BaseController
 
     /**
      * Logs in a user.
+     * @param string|array $defaultUrl return URL after login
      * @return mixed
      */
-    public function actionLogin()
+    public function actionLogin($defaultUrl = null)
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
-        $model = new LoginForm();
-        if (!Yii::$app->user->enableAutoLogin) $model->rememberMe = false;
-
         $period = isset($this->module->params['loginFrontendKeepPeriodSec'])
             ? intval($this->module->params['loginFrontendKeepPeriodSec'])
             : null;
-        if ($model->load(Yii::$app->request->post()) && $model->login($period)) {
-            return $this->goBack();
+
+        $model = $this->module->model('LoginForm');
+        if (!Yii::$app->user->enableAutoLogin) {
+            $model->rememberMe = false;
+        }
+
+        $loaded = $model->load(Yii::$app->request->post());
+        if ($loaded && $model->login($period)) {
+            return $this->goBack($defaultUrl);
         } else {
             return $this->render('login', [
                 'model' => $model,
@@ -181,34 +185,27 @@ class MainController extends BaseController
 
     /**
      * Create user's profile.
+     * @param string|array $defaultUrl return URL after signup
      * @return mixed
      */
-    public function actionSignup()
+    public function actionSignup($defaultUrl = null)
     {
-        $model = new ProfileForm([
-            'user' => new User,
-            'tc' => $this->tcModule,
-            'scenario' => ProfileForm::SCENARIO_SELF_CREATE,
+        $user = $this->module->model('User');
+        $configProfileForm = [
+            'user' => $user,
+            'scenario' => ProfileForm::SCENARIO_CREATE,
             'captchaActionUid' => $this->uniqueId . '/' . static::$captchaActionId,
-        ]);
+        ];
+        $model = $this->module->model('ProfileForm', [$configProfileForm]);
 
         $post = Yii::$app->request->post();
         $loaded = $model->load($post);
         if ($loaded && $model->save(true)) {
-            Yii::$app->mailer->setViewPath(__DIR__ . '/../views/_mail');
-            $message = Yii::$app->mailer->compose('confirm', ['model' => $model]);
-            $subject = Yii::t($this->tcModule, 'Confirm you registration on site') . ' ' . Yii::$app->request->hostName;
-            $message->setSubject($subject);
-            $message->setFrom($this->emailConfirmFrom);
-            $message->setTo($model->email);
-            if ($message->send()) {
-                Yii::$app->session->setFlash('success', Yii::t($this->tcModule, 'User created. Wait for admission.'));
-            } else {
-                Yii::error("Can't send E-mail to user #{$model->id}");
-                Yii::$app->session->setFlash('error', Yii::t($this->tcModule, "Signup problem. Connect to support."));
+            $this->sendSignupEmail($model);
+            if ($defaultUrl === null) {
+                $defaultUrl = Yii::$app->getHomeUrl(); // not null because sometimes go back to signup (without POST) will error
             }
-            //return $this->goBack(); //?? sometimes go back to signup - without POST will error
-            return $this->goHome(); //= return $this->redirect(Yii::$app->homeUrl);
+            return $this->goBack($defaultUrl);
         } else {
             return $this->render('profile-form', [
                 'model' => $model,
@@ -216,6 +213,26 @@ class MainController extends BaseController
         }
     }
     
+    /**
+     * @param ProfileForm $model
+     */
+    protected function sendSignupEmail($model)
+    {
+        $viewPath = $this->getViewPath();
+        Yii::$app->mailer->setViewPath(dirname($viewPath) . '/_mail');
+        $message = Yii::$app->mailer->compose('confirm', ['model' => $model]);
+        $subject = Yii::t($this->tcModule, 'Confirm you registration on site') . ' ' . Yii::$app->request->hostName;
+        $message->setSubject($subject);
+        $message->setFrom($this->emailConfirmFrom);
+        $message->setTo($model->email);
+        if ($message->send()) {
+            Yii::$app->session->setFlash('success', Yii::t($this->tcModule, 'User created. Wait for admission.'));
+        } else {
+            Yii::error("Can't send E-mail to user #{$model->id}");
+            Yii::$app->session->setFlash('error', Yii::t($this->tcModule, "Signup problem. Connect to support."));
+        }
+    }
+
     /**
      * Update profile.
      * @return mixed
@@ -226,10 +243,10 @@ class MainController extends BaseController
         if (empty($user)) {
             return $this->goBack();
         }
-        $model = new ProfileForm([
+        $configProfileForm = [
             'user' => $user,
-            'tc' => $this->tcModule,
-        ]);
+        ];
+        $model = $this->module->model('ProfileForm', [$configProfileForm]);
 
         $post = Yii::$app->request->post();
         $loaded = $model->load($post);
@@ -252,9 +269,10 @@ class MainController extends BaseController
      */
     public function actionConfirm($token)
     {
+        $user = $this->module->model('User');
         $user = $this->findModel([
             'auth_key' => $token,
-            'status' => User::STATUS_REGISTERED,
+            'status' => $user::STATUS_REGISTERED,
         ]);
 
         if (empty($user)) {
@@ -274,7 +292,7 @@ class MainController extends BaseController
             }
         }
 
-        $user->status = $this->waitModeration ? User::STATUS_WAIT : User::STATUS_ACTIVE;
+        $user->status = $this->waitModeration ? $user::STATUS_WAIT : $user::STATUS_ACTIVE;
         $user->auth_key = $user->generateAuthKey();
         $result = $user->save();
         if ($result) {
@@ -300,7 +318,8 @@ class MainController extends BaseController
      */
     protected function findModel($condition)
     {
-        return User::findOne($condition);
+        $user = $this->module->model('User');
+        return $user::findOne($condition);
     }
 
 }

@@ -1,9 +1,9 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $searchModel asb\yii2\modules\users_0_170112\models\UserSearch */
-/* @var $currentId integer current item id */
+    /* @var $this yii\web\View */
+    /* @var $dataProvider yii\data\ActiveDataProvider */
+    /* @var $searchModel asb\yii2\modules\users_0_170112\models\UserSearch */
+    /* @var $currentId integer current item id */
 
     use asb\yii2\common_2_170212\widgets\grid\ButtonedActionColumn;
     use asb\yii2\common_2_170212\assets\CommonAsset;

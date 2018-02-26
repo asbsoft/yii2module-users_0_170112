@@ -8,7 +8,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
- * Login form
+ * Login form.
  */
 class LoginForm extends BaseModel
 {
@@ -18,9 +18,7 @@ class LoginForm extends BaseModel
     public $username;
     public $password;
 
-    public static $tcCommon;
-
-    private $_user;
+    protected $_user;
 
     /**
      * @inheritdoc
@@ -29,14 +27,11 @@ class LoginForm extends BaseModel
     {
         parent::init();
 
-        static::$tcCommon = $this->tcModule;
+        if (isset($this->module->params['loginFrontendKeepPeriodSec'])) {
+            $this->loginPeriod = $this->module->params['loginFrontendKeepPeriodSec'];
+        }
     }
-
-    public static function tableName()
-    {
-        return '';
-    }
-
+    
     /**
      * @inheritdoc
      */
@@ -54,20 +49,16 @@ class LoginForm extends BaseModel
      */
     public function attributeLabels()
     {
-        $user = $this->getUser();
-        if (empty($user)) {
-            $user = new User;
-        }
+        $user = $this->module->model('User');
         return ArrayHelper::merge($user->attributeLabels(), [
-            'password' => Yii::t(static::$tcCommon, 'Password'),
-            'rememberMe' => Yii::t(static::$tcCommon, 'Remember me'),
+            'password' => Yii::t($this->tcModule, 'Password'),
+            'rememberMe' => Yii::t($this->tcModule, 'Remember me'),
         ]);
     }
 
     /**
      * Validates the password.
      * This method serves as the inline validation for password.
-     *
      * @param string $attribute the attribute currently being validated
      * @param array $params the additional name-value pairs given in the rule
      */
@@ -76,7 +67,7 @@ class LoginForm extends BaseModel
         if (!$this->hasErrors()) {
             $user = $this->getUser();
             if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, Yii::t(static::$tcCommon, 'Incorrect username or password.'));
+                $this->addError($attribute, Yii::t($this->tcModule, 'Incorrect username or password.'));
             }
         }
     }
@@ -102,16 +93,15 @@ class LoginForm extends BaseModel
     }
 
     /**
-     * Finds user by [[username]]
-     *
-     * @return User|null
+     * Find user by [[username]]
+     * @return UserIdentity|null
      */
     protected function getUser()
     {
         if ($this->_user === null) {
-            $this->_user = UserIdentity::findByUsername($this->username);
+            $user = $this->module->model('UserIdentity');
+            $this->_user = $user::findByUsername($this->username);
         }
-
         return $this->_user;
     }
 

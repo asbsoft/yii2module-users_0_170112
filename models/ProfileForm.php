@@ -5,18 +5,21 @@ namespace asb\yii2\modules\users_0_170112\models;
 use asb\yii2\modules\users_0_170112\Module;
 use asb\yii2\modules\users_0_170112\models\User;
 
+use asb\yii2\common_2_170212\models\BaseModel;
+
 use Yii;
 use yii\helpers\ArrayHelper;
-use yii\base\Model;
 
 /**
  * Profile form.
  */
-class ProfileForm extends Model
+class ProfileForm extends BaseModel
 {
-    const SCENARIO_SELF_CREATE = 'self-create';
+    const SCENARIO_CREATE = 'create';
 
+    // defaults, rewrite by module's params
     public $minUsernameLength = 3;
+    public $maxUsernameLength = 20;
     public $minPasswordLength = 6;
     public $maxPasswordLength = 32;
     
@@ -25,16 +28,11 @@ class ProfileForm extends Model
     public $email;
     public $auth_key;
 
-    public $password_old;
+    public $password; // old (already exists)
     public $password_new;
     public $password_repeat;
     public $change_auth_key;
     public $verify_code;
-
-    /** Translation category */
-    public $tc;
-
-    public $isNewRecord;
 
     public $captchaActionUid;
 
@@ -48,21 +46,20 @@ class ProfileForm extends Model
     {
         parent::init();
 
+        $properties = array_keys(Yii::getObjectVars($this));
+        $params = $this->module->params;
+        foreach ($params as $property => $value) {
+            if (in_array($property, $properties)) {
+                $this->$property = $value;
+            }
+        }
+
         if ($this->user->isNewRecord) {
-            $this->isNewRecord = true;
             $this->change_auth_key = false;
         } else {
-            $this->isNewRecord = false;
-
             $this->username = $this->user->username;
             $this->email    = $this->user->email;
             $this->auth_key = $this->user->auth_key;
-        }
-
-        // standart model yii\base\Model hasn't property $this->tcModule
-        if (empty($this->tc)) {
-            $module = Module::getModuleByClassname(Module::className());
-            $this->tc = $module->tcModule;
         }
     }
 
@@ -79,24 +76,25 @@ class ProfileForm extends Model
      */
     public function rules()
     {
-        return [
-            ['username', 'string', 'min' => $this->minUsernameLength, 'max' => 255],
-            [['username', 'password_new', 'password_repeat', 'email'], 'required', 'on' => self::SCENARIO_SELF_CREATE],
-            ['verify_code', 'captcha',
-                'captchaAction' => $this->captchaActionUid,
-                'on' => self::SCENARIO_SELF_CREATE,
+        $userModel = $this->module->model('User');
+        $rules = $userModel->profileRules(); // part of rules from User model (fields length, etc.)
+        $rules = ArrayHelper::merge($rules, [
+            // rules only for this model:
+            [['password_new', 'password_repeat'], 'required',
+                'on' => self::SCENARIO_CREATE,
             ],
-
-            [['password_old', 'password_new', 'password_repeat'], 'string',
+            ['verify_code', 'captcha', 'captchaAction' => $this->captchaActionUid,
+                'on' => self::SCENARIO_CREATE,
+            ],
+            [['password', 'password_new', 'password_repeat'], 'string',
                 'min' => $this->minPasswordLength, 'max' => $this->maxPasswordLength,
             ],
-            ['password_repeat', 'compare', 'compareAttribute' => 'password_new'],
-
-            ['email', 'string', 'max' => 255],
-            ['email', 'email'],
-
-            ['change_auth_key', 'boolean'],
-        ];
+            ['password_repeat', 'compare',
+                'compareAttribute' => 'password_new',
+                'skipOnEmpty' => false,
+            ],
+        ]);
+        return $rules;
     }
 
     /**
@@ -104,12 +102,18 @@ class ProfileForm extends Model
      */
     public function attributeLabels()
     {
-        return ArrayHelper::merge($this->user->attributeLabels(), [
-            'password'        => Yii::t($this->tc, 'Password'),
-            'password_old'    => Yii::t($this->tc, 'Old password'),
-            'password_new'    => Yii::t($this->tc, 'New password'),
-            'password_repeat' => Yii::t($this->tc, 'Repeat password'),
+        $user = $this->module->model('User');
+        $labels = $user->attributeLabels();
+        $labels = ArrayHelper::merge($labels, [
+            'password_new'    => Yii::t($this->tcModule, 'New password'),
+            'password_repeat' => Yii::t($this->tcModule, 'Repeat password'),
         ]);
+        if ($this->user->isNewRecord) {
+          $labels['password'] = Yii::t($this->tcModule, 'Password');
+        } else {
+          $labels['password'] = Yii::t($this->tcModule, 'Old password');
+        }
+        return $labels;
     }
 
     /**
@@ -117,8 +121,8 @@ class ProfileForm extends Model
      */
     public function getAttributeLabel($attribute)
     {
-        if ($this->isNewRecord && $attribute == 'password_new') {
-            $label = $this->getAttributeLabel('password');
+        if ($this->user->isNewRecord && $attribute == 'password_new') {
+            $label = Yii::t($this->tcModule, 'Password');
         } else {
             $label = parent::getAttributeLabel($attribute);
         }
@@ -126,28 +130,54 @@ class ProfileForm extends Model
     }
 
     /**
-     * @return boolean 
+     * @inheritdoc
+     * @return bool whether the validation should be executed. Defaults to true.
+     */
+    public function beforeValidate()
+    {
+        if ($this->user->isNewRecord && empty($this->password)) {
+            $this->password = $this->password_new;
+        }
+        return parent::beforeValidate();
+    }
+    
+    /**
+     * @inheritdoc
+     * @return bool whether the validation is successful without any error.
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
-        if (!$this->isNewRecord) {
-            if (empty($this->password_old)) {
-                $this->addError('password_old', Yii::t($this->tc, 'Old password required'));
-                return false;
-            }
-            $result = Yii::$app->security->validatePassword($this->password_old, $this->user->password_hash);
-            if (!$result) {
-                $this->addError('password_old', Yii::t($this->tc, 'Invalid password'));
-                return false;
+        // check this form fields
+        $result = parent::validate($attributeNames, $clearErrors);
+
+        // check user's fields
+        $this->user->load($this->attributes, '');
+        $resultUser = $this->user->validate();
+        if (!$resultUser) {
+            $this->addErrors($this->user->errors);
+            $result = false;
+        }
+
+        // check old password
+        if (!$this->user->isNewRecord) {
+            if (empty($this->password)) {
+                $this->addError('password', Yii::t($this->tcModule, 'Old password required'));
+                $result = false;
+            } else {
+                $result = Yii::$app->security->validatePassword($this->password, $this->user->password_hash);
+                if (!$result) {
+                    $this->addError('password', Yii::t($this->tcModule, 'Invalid password'));
+                    $result = false;
+                }
             }
         }
 
-        $result = parent::validate($attributeNames, $clearErrors);
         return $result;
     }
 
     /**
      * Edit user's profile.
+     * @param boolean $isNewRecord
      * @return integer|false the number of rows affected, or false if validation fails
      */
     public function save($isNewRecord)
@@ -166,7 +196,7 @@ class ProfileForm extends Model
             $loaded = $user->load($data);
             if ($isNewRecord) {
                 $user->scenario = $user::SCENARIO_CREATE;
-                $user->status = User::STATUS_REGISTERED;
+                $user->status = $user::STATUS_REGISTERED;
                 $saved = $user->insert();
             } else {
                 $saved = $user->update();
@@ -179,6 +209,18 @@ class ProfileForm extends Model
             }
         }
         return false;
+    }
+
+    /**
+     * Creates an [[ActiveQueryInterface]] instance for query purpose.
+     * Need for unique-validator imported from User model.
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        $module = Module::getModuleByClassname(Module::className());
+        $user = $module->model('User');
+        return $user::find();
     }
 
 }

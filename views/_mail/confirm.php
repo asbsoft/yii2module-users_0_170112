@@ -1,16 +1,15 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $model asb\yii2\modules\users_0_170112\models\ProfileForm */
+    /* @var $this yii\web\View */
+    /* @var $model asb\yii2\modules\users_0_170112\models\ProfileForm */
 
     use yii\helpers\Html;
     use yii\helpers\Url;
 
-    $tc = $model->tc;//var_dump($tc);
+    $tc = $model->tcModule;
 
-    $siteUrl = Url::to('', true);//var_dump($siteUrl);
+    $siteUrl = Url::to('', true);
 
-    //var_dump($model->attributes);//var_dump($model->auth_key);var_dump($model->user->auth_key);
     $confirmUrl = Url::toRoute(['confirm', 'token' => $model->user->auth_key], true);//var_dump($confirmUrl);exit;
 
 ?>

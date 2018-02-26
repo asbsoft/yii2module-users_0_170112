@@ -1,10 +1,9 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $model asb\yii2\modules\users_0_170112\models\UserWithRoles */
-/* @var $rolesModels empty|asb\yii2\modules\users_0_170112\models\AuthAssignment[] */
-
-/* @var $form yii\widgets\ActiveForm */
+    /* @var $this yii\web\View */
+    /* @var $model asb\yii2\modules\users_0_170112\models\UserWithRoles */
+    /* @var $rolesModels empty|asb\yii2\modules\users_0_170112\models\AuthAssignment[] */
+    /* @var $form yii\widgets\ActiveForm */
 
     use asb\yii2\modules\users_0_170112\models\User;
     use asb\yii2\modules\users_0_170112\models\AuthAssignment;
@@ -12,6 +11,12 @@
 
     use yii\helpers\Html;
     use yii\widgets\ActiveForm;
+
+
+    if (!isset($enableClientValidation)) { // from view-successor
+        $enableClientValidation = true;
+      //$enableClientValidation = false; // for debug
+    }
 
     $tc = $this->context->module->tcModule;
 
@@ -24,28 +29,36 @@
 ?>
 <div class="user-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+              'id' => 'profile-form',
+              'enableClientValidation' => $enableClientValidation,
+          ]); ?>
 
-    <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+    <?php $this->startBlock('fields') ?>
+        <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
 
-    <?php if (!$model->isNewRecord): ?>
-        <?= $form->field($model, 'change_auth_key')->checkbox([
-                'label' => $model->attributeLabels()['change_auth_key'] . " '{$model->auth_key}'",
-            ]) ?>
-    <?php endif; ?>
+        <?php if (!$model->isNewRecord): ?>
+            <?= $form->field($model, 'change_auth_key')->checkbox([
+                    'label' => $model->attributeLabels()['change_auth_key'] . " '{$model->auth_key}'",
+                ]) ?>
+        <?php endif; ?>
 
-    <?= $form->field($model, 'status')->dropDownList(User::statusesList(true)) ?>
+        <?= $form->field($model, 'status')->dropDownList(User::statusesList(true)) ?>
 
-    <?php //echo $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
-    <?php //echo $form->field($model, 'email_confirm_token')->textInput(['maxlength' => true]) ?>
-    <?php //echo $form->field($model, 'password_hash')->textInput(['maxlength' => true]) ?>
-    <?php //echo $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?>
-    <?php //echo $form->field($model, 'created_at')->textInput() ?>
-    <?php //echo $form->field($model, 'updated_at')->textInput() ?>
+        <?php //echo $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
+        <?php //echo $form->field($model, 'email_confirm_token')->textInput(['maxlength' => true]) ?>
+        <?php //echo $form->field($model, 'password_hash')->textInput(['maxlength' => true]) ?>
+        <?php //echo $form->field($model, 'password_reset_token')->textInput(['maxlength' => true]) ?>
+        <?php //echo $form->field($model, 'created_at')->textInput() ?>
+        <?php //echo $form->field($model, 'updated_at')->textInput() ?>
+
+        <?php $this->startBlock('after-main-fields') ?>
+        <?php $this->stopBlock('after-main-fields') ?>
+    <?php $this->stopBlock('fields') ?>
 
     <?php if ($showRoles && !$model->isNewRecord): ?>
         <label><?= Yii::t($tc, 'Roles') ?></label>

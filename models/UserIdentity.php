@@ -21,7 +21,7 @@ class UserIdentity extends User implements IdentityInterface
         $users = [];
         foreach ($result as $user) {
             $users[$user['id']] = $user;
-        }//var_dump($users);exit;
+        }
         return $users;
     }
 

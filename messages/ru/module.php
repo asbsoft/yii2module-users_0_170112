@@ -1,8 +1,11 @@
 <?php
 //ru
 return [
-    'Simple users manager'      => 'Простой менеджер пользователей',
     'Adminer'                   => 'Админка',
+    'Simple users manager'      => 'Простой менеджер пользователей',
+    'Users manager'             => 'Менеджер пользователей',
+    'Users'                     => 'Пользователи',
+    'User'                      => 'Пользователь',
 
 // controllers
 //MainController.php
@@ -63,7 +66,7 @@ return [
     'Email confirm token'       => 'Токен подтверждения Email',
     'Password hash'             => 'Хеш пароля',
     'Password reset token'      => 'Токен обновления пароля',
-    'Email'                     => 'Email',
+    'Email'                     => 'Email адрес',
     'Status'                    => 'Статус',
     //'Created at'                => 'Создан в',
     'Created at'                => 'Создан',
@@ -82,6 +85,9 @@ return [
     'Enter code here'           => 'Введите код',
     'Click to refresh code'     => 'Кликните, чтобы изменить код',
     'Send'                      => 'Отправить',
+    'Enter your password twice' => 'Введите ваш пароль дважды',
+    'Enter new password twice only if need to change it, otherwise keep these fields empty'
+                                => 'Введите новый пароль дважды если его надо изменить, иначе оставьте эти поля пустыми',
 
 // views/admin
 //_form.php
@@ -114,6 +120,8 @@ return [
     'Delete'                    => 'Удалить',
     'Are you sure you want to delete this item?'
                                 => 'Вы уверены, что хотите удалить эту запись?',
+    'Attribute'                 => 'Атрибут',
+    'Value'                     => 'Значение',
 
 // views/_mail
 //confirm.php

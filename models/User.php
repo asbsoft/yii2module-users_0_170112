@@ -2,9 +2,12 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
+use asb\yii2\modules\users_0_170112\Module;
+
 use asb\yii2\common_2_170212\models\DataModel;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -22,8 +25,6 @@ use Yii;
  */
 class User extends DataModel
 {
-    //const TABLE_NAME = 'user'; // depracated, table name move to module's params
-
     const STATUS_REGISTERED = -20;
     const STATUS_WAIT       = -10;
   //const STATUS_UNACTIVE   = 0;
@@ -33,14 +34,16 @@ class User extends DataModel
 
     const SCENARIO_CREATE = 'create';
 
+    // defaults, rewrite by module's params
     public $minUsernameLength = 3;
+    public $maxUsernameLength = 20;
     public $minPasswordLength = 6;
     public $maxPasswordLength = 32;
 
     public $password;
     public $change_auth_key;
 
-    public static $tcCommon; // for using in static context
+    public static $tcCommon = 'app'; // for using in static context
 
     /**
      * @inheritdoc
@@ -50,8 +53,19 @@ class User extends DataModel
         parent::init();
 
         static::$tcCommon = $this->tcModule;
+
+        $properties = array_keys(Yii::getObjectVars($this));
+        $params = $this->module->params;
+        foreach ($params as $property => $value) {
+            if (in_array($property, $properties)) {
+                $this->$property = $value;
+            }
+        }
     }
     
+    /**
+     * @return array statuses list: [value => name, ...]
+     */
     public static function statusesList($showWait = true)
     {
         $list = [];
@@ -69,29 +83,41 @@ class User extends DataModel
      */
     public function rules()
     {
-        return [
-            [['username'], 'string', 'min' => $this->minUsernameLength, 'max' => 255],
-            [['password'], 'string', 'min' => $this->minPasswordLength, 'max' => $this->maxPasswordLength],
-
-            ['username', 'match', 'pattern' => '/^[A-Za-z][A-Za-z0-9\-\.\ ]+$/i',
-                'message' => Yii::t(static::$tcCommon, 'Only latin letters, digits, hyphen, points and blanks begin with letter')
-            ],
-
-            [['username', 'password', 'email'], 'required', 'on' => self::SCENARIO_CREATE],
-
-            [['username', 'email', 'auth_key', 'password_reset_token'], 'unique'],
-
-            [['email', 'password_hash'], 'string', 'max' => 255],
-            ['email', 'email'],
+        return ArrayHelper::merge($this->profileRules(), [
+            // main (need db for validate)
+            ['username', 'unique'],
+            ['email', 'unique'],
+            // additional
+            ['password_hash', 'string', 'max' => 255],
             [['status', 'created_at', 'updated_at'], 'integer'],
             ['status', 'in', 'range' => array_keys(self::statusesList())],
             ['status', 'default', 'value' => self::STATUS_DELETED],
-
+            [['auth_key', 'password_reset_token'], 'unique'],
             ['change_auth_key', 'boolean'],
 
             //[['auth_key'], 'string', 'max' => 32],
             //[['created_at', 'updated_at'], 'required'],
             //[['email_confirm_token', 'password_hash', 'password_reset_token', 'email'], 'string', 'max' => 255],
+        ]);
+    }
+    /**
+     * Part of rules for common use with ProfileForm.
+     * Rules with fields length, patterns be best in single place.
+     */
+    public function profileRules()
+    {
+        return [
+            [['username', 'password', 'email'], 'required', 'on' => self::SCENARIO_CREATE],
+
+            ['username', 'match', 'pattern' => '/^[A-Za-z][A-Za-z0-9\-\.\ ]+$/i',
+                'message' => Yii::t($this->tcModule, 'Only latin letters, digits, hyphen, points and blanks begin with letter')
+            ],
+            ['username', 'string', 'min' => $this->minUsernameLength, 'max' => $this->maxUsernameLength],
+
+            ['password', 'string', 'min' => $this->minPasswordLength, 'max' => $this->maxPasswordLength],
+
+            ['email', 'string', 'max' => 255],
+            ['email', 'email'],
         ];
     }
 
@@ -106,6 +132,7 @@ class User extends DataModel
             'auth_key' => Yii::t($this->tcModule, 'Auth key'),
             'change_auth_key'      => Yii::t($this->tcModule, 'Change auth key'),
           //'email_confirm_token'  => Yii::t($this->tcModule, 'Email confirm token'),
+            'password'             => Yii::t($this->tcModule, 'Password'),
             'password_hash'        => Yii::t($this->tcModule, 'Password hash'),
             'password_reset_token' => Yii::t($this->tcModule, 'Password reset token'),
             'email'      => Yii::t($this->tcModule, 'Email'),
@@ -121,7 +148,10 @@ class User extends DataModel
      */
     public static function find()
     {
-        return new UserQuery(get_called_class());
+      //return new UserQuery(get_called_class());
+        $module = Module::getModuleByClassname(Module::className());
+        $queryModel = $module->model('UserQuery', [get_called_class()]);
+        return $queryModel;
     }
 
     /**
@@ -160,6 +190,16 @@ class User extends DataModel
     public static function findByUsername($username)
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    /**
+     * Finds user by email.
+     * @param string $email
+     * @return static|null
+     */
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**

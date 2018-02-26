@@ -1,16 +1,16 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+    /* @var $this yii\web\View */
+    /* @var $model asb\yii2\modules\users_0_170112\models\UserSearch */
+    /* @var $form yii\widgets\ActiveForm */
 
-/* @var $this yii\web\View */
-/* @var $model asb\yii2\modules\users_0_170112\models\UserSearch */
-/* @var $form yii\widgets\ActiveForm */
+    use yii\helpers\Html;
+    use yii\widgets\ActiveForm;
 
-$tc = $this->context->module->tcModule;
+
+    $tc = $this->context->module->tcModule;
 
 ?>
-
 <div class="user-search">
 
     <?php $form = ActiveForm::begin([

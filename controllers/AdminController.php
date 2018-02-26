@@ -2,13 +2,6 @@
 
 namespace asb\yii2\modules\users_0_170112\controllers;
 
-use asb\yii2\modules\users_0_170112\models\LoginForm;
-use asb\yii2\modules\users_0_170112\models\User;
-use asb\yii2\modules\users_0_170112\models\UserWithRoles;
-use asb\yii2\modules\users_0_170112\models\UserSearch;
-use asb\yii2\modules\users_0_170112\models\AuthAssignment;
-use asb\yii2\modules\users_0_170112\models\AuthItem;
-
 use asb\yii2\common_2_170212\controllers\BaseAdminController;
 
 use Yii;
@@ -16,6 +9,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
+
+use Exception;
 
 /**
  * AdminController implements the CRUD actions for User model.
@@ -32,9 +27,11 @@ class AdminController extends BaseAdminController
         parent::init();
 
         try { // check if auth tables exists
-            AuthItem::find()->count();
-            $this->showRoles = (boolean)AuthAssignment::find()->count();
-        } catch(\Exception $ex) {}
+            $authItemModel = $this->module->model('AuthItem');
+            $authItemModel::find()->count();
+            $authAssignmentModel = $this->module->model('AuthAssignment');
+            $this->showRoles = (boolean) $authAssignmentModel::find()->count();
+        } catch(Exception $ex) {}
     }
     /**
      * @inheritdoc
@@ -74,7 +71,7 @@ class AdminController extends BaseAdminController
      */
     public function actionIndex($page = 1, $id = 0)
     {
-        $searchModel = new UserSearch();
+        $searchModel = $this->module->model('UserSearch');
         $params = Yii::$app->request->queryParams;
         $dataProvider = $searchModel->search($params);
 
@@ -116,7 +113,7 @@ class AdminController extends BaseAdminController
      */
     public function actionCreate()
     {
-        $model = new User();
+        $model = $this->module->model('User');
         $model->loadDefaultValues();
         $model->status = $model::STATUS_DELETED;
         $model->scenario = $model::SCENARIO_CREATE;
@@ -141,25 +138,28 @@ class AdminController extends BaseAdminController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->pageSize = intval($this->module->params['pageSizeAdmin']);
-
+        if (!empty($this->module->params['pageSizeAdmin'])) {
+            $model->pageSize = intval($this->module->params['pageSizeAdmin']);
+        }
         $post = Yii::$app->request->post();
-        
         if ($model->load($post) && $model->save()) {
             return $this->redirect(['index', 'page' => $model->page, 'id' => $model->id]);
         } else {
             $rolesModels = [];
             if ($this->showRoles && !$model->isNewRecord) {
-                $allRoles = AuthItem::find()->where(['like', 'name', 'role'])->all();
+                $authItemModel = $this->module->model('AuthItem');
+                $allRoles = $authItemModel::find()->where(['like', 'name', 'role'])->all();
                 foreach ($allRoles as $role) {
                     $data = [
                         'item_name' => $role->name,
                         'user_id'   => $model->id,
                     ];
-                    $next = AuthAssignment::find()->where($data)->one();
+                    
+                    $authAssignmentModel = $this->module->model('AuthAssignment');
+                    $next = $authAssignmentModel::find()->where($data)->one();
                     if (empty($next)) {
                         $data['value'] = false;
-                        $next = new AuthAssignment($data);
+                        $next = $this->module->model('AuthAssignment', [$data]);
                     } else {
                         $next->value = true;
                     }
@@ -243,7 +243,7 @@ class AdminController extends BaseAdminController
             ? intval($this->module->params['loginAdminKeepPeriodSec'])
             : null;
 
-        $model = new LoginForm();
+        $model = $this->module->model('LoginForm');
         $model->rememberMe = false;
 
         if ($model->load(Yii::$app->request->post()) && $model->login($period)) {
@@ -276,7 +276,8 @@ class AdminController extends BaseAdminController
      */
     protected function findModel($id)
     {
-        if (($model = UserWithRoles::findOne($id)) !== null) {
+        $userWithRoles = $this->module->model('UserWithRoles');
+        if (($model = $userWithRoles::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

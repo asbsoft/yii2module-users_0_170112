@@ -11,7 +11,6 @@ use yii\data\ActiveDataProvider;
 /**
  * UserSearch represents the model behind the search form about `asb\yii2\modules\users_0_170112\models\User`.
  */
-//class UserSearch extends User
 class UserSearch extends UserWithRoles
 {
     const ROLE_LOGINED = '@';
@@ -37,8 +36,6 @@ class UserSearch extends UserWithRoles
     public function scenarios()
     {
         // bypass scenarios() implementation in the parent class
-        //return Model::scenarios();
-        //return User::scenarios();
         return UserWithRoles::scenarios();
     }
 
@@ -51,8 +48,6 @@ class UserSearch extends UserWithRoles
      */
     public function search($params)
     {
-
-        //$query = User::find();
         $query = UserWithRoles::find();
 
         // add conditions that should always apply here

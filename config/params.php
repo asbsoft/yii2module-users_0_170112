@@ -19,6 +19,11 @@ return [
     'confirmExpireDays' => 31,
     //'confirmExpireDays' => 0,
 
+    /** Min login length */
+    'minUsernameLength' => 5,
+    /** Max login length */
+    'maxUsernameLength' => 25,
+
     /** Admin list page size */
     'pageSizeAdmin' => 10,
 

@@ -1,16 +1,17 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $form yii\bootstrap\ActiveForm */
-/* @var $model \common\models\LoginForm */
+    /* @var $this yii\web\View */
+    /* @var $form yii\bootstrap\ActiveForm */
+    /* @var $model \common\models\LoginForm */
 
-use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+    use yii\helpers\Html;
+    use yii\bootstrap\ActiveForm;
 
-$tc = $this->context->module->tcModule;
 
-$this->title = Yii::t($tc, 'Admin login');
-$this->params['breadcrumbs'][] = $this->title;
+    $tc = $this->context->module->tcModule;
+
+    $this->title = Yii::t($tc, 'Admin login');
+    $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="site-login">

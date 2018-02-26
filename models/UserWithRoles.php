@@ -2,8 +2,6 @@
 
 namespace asb\yii2\modules\users_0_170112\models;
 
-use asb\yii2\modules\users_0_170112\models\AuthAssignment;
-
 use Yii;
 
 class UserWithRoles extends User
@@ -15,7 +13,8 @@ class UserWithRoles extends User
      */
     public function getRoles()
     {
-        return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
+        $authAssignmentModel = $this->module->model('AuthAssignment');
+        return $this->hasMany($authAssignmentModel::className(), ['user_id' => 'id']);
     }
 
     /**
@@ -33,7 +32,8 @@ class UserWithRoles extends User
 
     protected function loadRoles($data)
     {
-        $formName = basename(AuthAssignment::className());
+        $authAssignmentModel = $this->module->model('AuthAssignment');
+        $formName = basename($authAssignmentModel::className());
         if (!empty($data[$formName])) {
             $this->_roles = $data[$formName];
         }
@@ -47,7 +47,8 @@ class UserWithRoles extends User
     {
         $result = parent::save($runValidation, $attributeNames);
         if ($result && !empty($this->_roles)) {
-            $result = AuthAssignment::setRoles($this, $this->_roles);
+            $authAssignmentModel = $this->module->model('AuthAssignment');
+            $result = $authAssignmentModel::setRoles($this, $this->_roles);
         }
         return $result;
     }
@@ -61,7 +62,8 @@ class UserWithRoles extends User
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (AuthAssignment::deleteRoles($this) && parent::delete()) {
+            $authAssignmentModel = $this->module->model('AuthAssignment');
+            if ($authAssignmentModel::deleteRoles($this) && parent::delete()) {
                 $result = true;
             } else {
                 $result = false;
