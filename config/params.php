@@ -2,9 +2,19 @@
 
 use asb\yii2\modules\users_0_170112\models\User;
 
+use asb\yii2\common_2_170212\behaviors\ParamsAccessBehaviour;
+
 return [
     'label'   => 'Simple users manager',
     'version' => '0.170112',
+
+    'behaviors' => [
+        'params-access' => [
+            'class' => ParamsAccessBehaviour::className(),
+            'defaultRole' => 'roleAdmin',
+          //'readonlyParams' => [],
+        ],
+    ],
 
     /** Keep login period for admin */
     'loginAdminKeepPeriodSec' => 28800, // 8 hours: 3600 * 8
