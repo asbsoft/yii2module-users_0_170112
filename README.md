@@ -9,7 +9,7 @@ and final activation by admin.
 Initial you have to create at least one admin-user by migrations.
 
 Module has very simple roles management in backend.
-Initial exists two admin's roles: 'roleRoot' and 'roleAdmin' create by migrations.
+Initial exists two admins' roles: 'roleRoot' and 'roleAdmin' create by migrations.
 In idea user with 'roleRoot' can anything (developer).
 User with 'roleAdmin' is owner-supermoderator of all content without some developers rights.
 
